@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next) {
   res.locals.login = req.isAuthenticated();
   next();
-})
+}); // login variable is used in header.hbs for make use of user management.
 
 app.use('/user', userRouter);
 app.use('/', indexRouter);
