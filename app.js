@@ -9,6 +9,7 @@ var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
 var validator = require('express-validator');
+var MongoStore = require('connect-mongo')(session);
 
 var userRouter = require('./routes/user');
 var indexRouter = require('./routes/index');
@@ -31,7 +32,9 @@ app.use(cookieParser());
 app.use(session({
   secret: 'mysupersecret',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  cookie: { maxAge: 180 * 60 * 1000 }
 }));
 app.use(flash()); //After session
 app.use(passport.initialize());
@@ -40,6 +43,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(req, res, next) {
   res.locals.login = req.isAuthenticated();
+  res.locals.session = req.session;
   next();
 }); // login variable is used in header.hbs for make use of user management.
 
